@@ -1,0 +1,28 @@
+{
+  "name": "sql-employee-tracker",
+  "version": "1.0.0",
+  "description": "Moduel 12 Challenge, a command line application to manage a company's employee database",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RyanSKang/SQL-Employee-Tracker.git"
+  },
+  "keywords": [
+    "node.js",
+    "inquierer",
+    "mysql2"
+  ],
+  "author": "Ryan kang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RyanSKang/SQL-Employee-Tracker/issues"
+  },
+  "homepage": "https://github.com/RyanSKang/SQL-Employee-Tracker#readme",
+  "dependencies": {
+    "inquirer": "^8.2.4",
+    "mysql2": "^3.4.3"
+  }
+}
