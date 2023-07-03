@@ -176,8 +176,8 @@ function updateEmployee(){
 
 // quitApplication() Function
 function quitApplication(){
-    Connection.end();
-    process.end();
+    db.end();
+    process.exit();
 }
 
 module.exports = { employee_db };
