@@ -45,15 +45,17 @@ let employee_db = function () {
             case "Update Employee Role":
                 updateEmployee();
                 break;
-            default:
-                quitApplication();
+            case "Quit Application":
+                db.end();
+                break;
         }
     })
 };
 
 // viewDepartment() Function
 function viewDepartment() {
-    db.query('SELECT * FROM department', function (err, res) {
+    const sql=`SELECT * FROM department`;
+    db.query(sql, function (err, res) {
         if (err) throw (err);
         console.table(res);
         employee_db();
