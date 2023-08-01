@@ -54,9 +54,12 @@ let employee_db = function () {
 
 // viewDepartment() Function
 function viewDepartment() {
-    const sql=`SELECT * FROM department`;
+    const sql = `SELECT * FROM department`;
     db.query(sql, function (err, res) {
-        if (err) throw (err);
+        if (err) {
+            console.error(err);
+            throw (err);
+            }
         console.table(res);
         employee_db();
     });
@@ -65,16 +68,31 @@ function viewDepartment() {
 // viewRoles() Function
 function viewRoles() {
     db.query('SELECT * FROM role', function (err, res) {
-        if (err) throw (err);
+        if (err) {
+            console.error(err);
+            throw (err);
+            }
         console.table(res);
         employee_db();
     })
 };
 
-// viewEmployees() Function
+// viewEmployees() Function showing employee data including employee ids, first name, last name, job title, department, salaries, and managers that the employees report to 
 function viewEmployees() {
-    db.query('SELECT * FROM employee', function (err, res) {
-        if (err) throw (err);
+    const sql= 
+    `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager
+    FROM employee 
+    LEFT JOIN role 
+    ON employee.role_id = role.id
+    LEFT JOIN department 
+    ON department.id = role.department_id
+    LEFT JOIN employee m
+      ON m.id = employee.manager_id`
+    db.query(sql, function (err, res) {
+        if (err) {
+            console.error(err);
+            throw (err);
+            }
         console.table(res);
         employee_db();
     })
@@ -88,7 +106,10 @@ function addDepartment() {
         name: "departmentName"
     }).then(function (answer) {
         db.query("INSERT INTO department (name) VALUES (?)", [answer.departmentName], function (err, res) {
-            if (err) throw (err);
+            if (err) {
+                console.error(err);
+                throw (err);
+                }
             console.table(res);
             employee_db();
         })
@@ -113,18 +134,20 @@ function addRole() {
             message: "Please input department ID number",
             name: "departmentID"
         }
-    ]) .then(function (answer){
-var query= 'INSERT INTO role (title,salary,department_id) VALUES (?,?,?)'
-db.query(query,
-    [answer.roleTitle, 
-     answer.salary,
-     answer.department_id],
-     function (err, res) {
-                if (err) throw (err);
-                console.table(res);
+    ]).then(function (answer) {
+        var query = 'INSERT INTO role (title,salary,department_id) VALUES (?,?,?)'
+        db.query(query,
+            [answer.roleTitle,
+            answer.salary,
+            answer.department_id],
+            function (err, res) {
+                if (err) {
+                    console.error(err);
+                    throw (err);
+                    }
                 employee_db();
+            });
     });
-});
     // .then(function (answer) {
     //     db.query("INSERT INTO role (title,salary,departmentID) VALUES (?,?,?)", [answer.roleTitle, answer.salary, answer.departmentID], function (err, res) {
     //         if (err) throw (err);
@@ -158,8 +181,12 @@ function addEmployee() {
             name: "managerID"
         }
     ]).then(function (answer) {
-        db.query('INSERT INTO employee (firstName, lastName, roleID, managerID) VALUES(?,?,?,?)', [answer.firstName, answer.lastName, answer.roleID, answer.managerID], function (err, res) {
-            if (err) throw (err);
+        const sql=`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES(?,?,?,?)`
+        db.query(sql, [answer.first_name, answer.last_name, answer.role_id, answer.manager_id], function (err, res) {
+            if (err) {
+            console.error(err);
+            throw (err);
+            }
             console.table(res);
             employee_db();
         });
@@ -167,30 +194,33 @@ function addEmployee() {
 };
 
 // updateEmployee() Function
-function updateEmployee(){
+function updateEmployee() {
     inquirer.prompt([
         {
-            type:"input",
-            message:"Which employee would you like to update?",
-            name:"employeeUpdate"
+            type: "input",
+            message: "Which employee would you like to update?",
+            name: "employeeUpdate"
         },
         {
-            type:"input",
-            message:"What do you want to change the new Role to?",
-            name:"updateRole"
+            type: "input",
+            message: "What do you want to change the new Role to?",
+            name: "updateRole"
         }
-        
-    ]).then(function(answer){
-       db.query('UPDATE employee SET roleID=? WHERE firstName= ?', [answer.updateRole, answer.employeeUpdate], function(err,res){
-        if(err) throw(err);
-        console.table(res);
-        employee_db();
-       })
+
+    ]).then(function (answer) {
+        db.query('UPDATE employee SET role_id=? WHERE first_name= ?', [answer.updateRole, answer.employeeUpdate], function (err, res) {
+            if (err) {
+                console.error(err);
+                throw (err);
+                }
+            console.table(res);
+            employee_db();
+        })
     })
 };
 
 // quitApplication() Function
-function quitApplication(){
+function quitApplication() {
     db.end();
     process.exit();
 }

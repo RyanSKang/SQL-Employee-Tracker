@@ -20,7 +20,7 @@ INSERT INTO role (title, salary, department_id)
 VALUE ("Tool/Mold Changer", 150000.00,4);
 
 INSERT INTO role (title, salary, department_id)
-VALUE ("Production Planner", 75000.00,1);
+VALUE ("Supply Chain Manager", 200000.00,1);
 
 INSERT INTO role (title, salary, department_id)
 VALUE ("Warehouse Supervisor" , 60000.00,2);
@@ -31,7 +31,7 @@ VALUE ("Extruder Operator", 40000.00, 3);
 
 -- Creating raw data into employee -- 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUE ("Ryan", "Kang", 2,1);
+VALUE ("Ryan", "Kang", 2, null);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUE ("Sally", "Pancheri", 1,1); 
