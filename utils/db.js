@@ -110,13 +110,25 @@ function addRole() {
             message: "Please input department ID number",
             name: "departmentID"
         }
-    ]).then(function (answer) {
-        db.query("INSTERT INTO role (title,salary,departmentID) VALUES (?,?,?)", [answer.roleTitle, answer.salary, answer.departmentID], function (err, res) {
-            if (err) throw (err);
-            console.table(res);
-            employee_db()
-        })
-    })
+    ]) .then(function (answer){
+var query= 'INSERT INTO role (title,salary,department_id) VALUES (?,?,?)'
+db.query(query,
+    [answer.roleTitle, 
+     answer.salary,
+     answer.department_id],
+     function (err, res) {
+                if (err) throw (err);
+                console.table(res);
+                employee_db();
+    });
+});
+    // .then(function (answer) {
+    //     db.query("INSERT INTO role (title,salary,departmentID) VALUES (?,?,?)", [answer.roleTitle, answer.salary, answer.departmentID], function (err, res) {
+    //         if (err) throw (err);
+    //         console.table(res);
+    //         employee_db()
+    //     })
+    // })
 };
 
 // addEmployee() Function
