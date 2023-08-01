@@ -1,6 +1,7 @@
 // Import and require inquirer
 const inquirer = require('inquirer');
 const db = require('../config/connection');
+require('console.table');
 
 // Starting screen once logged into node
 let employee_db = function () {
