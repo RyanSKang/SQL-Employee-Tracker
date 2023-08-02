@@ -47,6 +47,7 @@ let employee_db = function () {
                 break;
             case "Quit Application":
                 db.end();
+                console.log('Goodbye!')
                 break;
         }
     })
@@ -220,36 +221,84 @@ function addEmployee() {
     });
 };
 
-// updateEmployee() Function
-function updateEmployee() {
-    inquirer.prompt([
-        {
-            type: "input",
-            message: "Which employee would you like to update?",
-            name: "employeeUpdate"
-        },
-        {
-            type: "input",
-            message: "What do you want to change the new Role to?",
-            name: "updateRole"
-        }
+// updateEmployee() Function to select an employee and update their role
+function updateEmployee(){
+    employees()
+}
 
-    ]).then(function (answer) {
-        db.query('UPDATE employee SET role_id=? WHERE first_name= ?', [answer.updateRole, answer.employeeUpdate], function (err, res) {
-            if (err) {
-                console.error(err);
-                throw (err);
-                }
-            console.table(res);
-            employee_db();
-        })
+// Part of updateEmployee Function to select an employee
+function employees(){
+    console.log('Selecting an employee to update');
+    const sql=
+    `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager
+    FROM employee 
+    LEFT JOIN role 
+    ON employee.role_id = role.id
+    LEFT JOIN department 
+    ON department.id = role.department_id
+    LEFT JOIN employee m
+    ON m.id = employee.manager_id`;
+    
+    db.query(sql, function (err, res) {
+        if (err) {
+            console.error(err);
+            throw (err);
+            }
+        const employeeArr = res.map(({ id, first_name, last_name}) => ({ value: id, name: `${first_name} ${last_name}`}));
+        console.table(res);
+        roleChoice(employeeArr)
     })
 };
 
-// quitApplication() Function
-function quitApplication() {
-    db.end();
-    process.exit();
+// Part of updateEmployee() to select role choices
+function roleChoice(employeeArr){
+    const sql=`SELECT role.id, role. title, role.salary FROM role`
+    db.query(sql, function(err, res) {
+        if (err) {
+            console.error(err);
+            throw (err);
+            }
+        const roles=res.map(({ id, title, salary}) => ({value: id, title: `${title}`, salary: `${salary}`}));
+        console.table(res);
+        updateEmployeePrompt(employeeArr, roles);
+    })
 }
+
+// Part of updateEmployee() to initiate inquirer prompt for user to select employee and roles
+function updateEmployeePrompt(employeeArr, roles){
+    inquirer
+    .prompt([
+        {
+            type: "list",
+            name:"employee_id",
+            message: "Which employee would you like to update",
+            choices: employeeArr
+        },
+        {
+            type: "list",
+            name: "role_id",
+            message: "Which role would you like to assign to this employee?",
+            choices: roles
+        }
+    ])
+    .then(function (ans) {
+        const sql= `UPDATE employee SET role_id= ? WHERE id= ?`
+        db.query(sql,
+            [
+                ans.role_id,
+                ans.employee_id
+            ],
+            function(err, res) {
+                if (err) {
+                    console.error(err);
+                    throw (err);
+                    }
+                console.table(res);
+                console.log(res.affectedRows + "successfully updated")
+                employee_db()
+            });
+    });
+};
+    
 
 module.exports = { employee_db };
