@@ -52,7 +52,7 @@ let employee_db = function () {
     })
 };
 
-// viewDepartment() Function
+// viewDepartment() Function displaying department names and department ids
 function viewDepartment() {
     const sql = `SELECT * FROM department`;
     db.query(sql, function (err, res) {
@@ -65,9 +65,13 @@ function viewDepartment() {
     });
 };
 
-// viewRoles() Function
+// viewRoles() Function displaying job title, role id, department the role belongs to, and the salary for the role
 function viewRoles() {
-    db.query('SELECT * FROM role', function (err, res) {
+    const sql=`SELECT role.title, role.id, department.name AS department, role.salary
+    FROM role
+    LEFT JOIN department
+    ON department.id =  role.department_id`
+    db.query(sql, function (err, res) {
         if (err) {
             console.error(err);
             throw (err);
@@ -98,7 +102,7 @@ function viewEmployees() {
     })
 };
 
-// addDepartment() Function
+// addDepartment() Function displaying newly added department into database
 function addDepartment() {
     inquirer.prompt({
         type: "input",
@@ -116,45 +120,68 @@ function addDepartment() {
     })
 };
 
-// addRole() Function
+// addRole() Function displaying newly added role into database
 function addRole() {
     inquirer.prompt([
         {
             type: "input",
             message: "Please input role",
-            name: "roleTitle"
+            name: "roleTitle",
+            validate: roleTitle => {
+                if (roleTitle){
+                    return true;
+                } else {
+                    console.log("Need to enter a role title!")
+                }
+            }
         },
         {
             type: "input",
             message: "Please input salary for this role",
-            name: "salary"
-        },
-        {
-            type: "input",
-            message: "Please input department ID number",
-            name: "departmentID"
+            name: "salary",
+            validate: salary => {
+                if (salary){
+                    return true;
+                }else {
+                    console.log('Please enter a salary for this role');
+                    return false;
+                };
+            }
         }
-    ]).then(function (answer) {
-        var query = 'INSERT INTO role (title,salary,department_id) VALUES (?,?,?)'
-        db.query(query,
-            [answer.roleTitle,
-            answer.salary,
-            answer.department_id],
-            function (err, res) {
+    ])
+        .then (answer => {
+            const departmentParams= [answer.roleTitle, answer.salary];
+            const sql= `SELECT * FROM department`;
+            db.query(sql, function (err, res) {
                 if (err) {
                     console.error(err);
                     throw (err);
+                }
+                console.table(res)
+                const department= res.map(({name,id}) => ({name: name, value: id}))
+                inquirer.prompt([
+                    {
+                    type: "list",
+                    name: "department",
+                    message: "Please assign role to a department",
+                    choices: department
                     }
-                employee_db();
+                ])
+                .then(departmentAnswer => {
+                    const department= departmentAnswer.department;
+                    departmentParams.push(department);
+                    const sql =`INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`
+                    db.query(sql, departmentParams, (err) => {
+                        if (err) {
+                            console.error(err);
+                            throw (err);
+                            }
+                        console.log("You successfully added a role");
+                        return viewRoles();
+                    });
+                });
             });
-    });
-    // .then(function (answer) {
-    //     db.query("INSERT INTO role (title,salary,departmentID) VALUES (?,?,?)", [answer.roleTitle, answer.salary, answer.departmentID], function (err, res) {
-    //         if (err) throw (err);
-    //         console.table(res);
-    //         employee_db()
-    //     })
-    // })
+        });
 };
 
 // addEmployee() Function
@@ -163,22 +190,22 @@ function addEmployee() {
         {
             type: "input",
             message: "First name of Employee?",
-            name: "firstName"
+            name: "first_name"
         },
         {
             type: "input",
             message: "Last name of Employee?",
-            name: "lastName"
+            name: "last_name"
         },
         {
             type: "input",
             message: "Please input employee's role ID number",
-            name: "roleID"
+            name: "role_id"
         },
         {
             type: "input",
             message: "Please input the manager ID number",
-            name: "managerID"
+            name: "manager_id"
         }
     ]).then(function (answer) {
         const sql=`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES(?,?,?,?)`
