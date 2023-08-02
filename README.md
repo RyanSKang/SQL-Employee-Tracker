@@ -78,7 +78,7 @@ Following Installation Needed:
 ![Screenshot 2023-08-02 at 1 09 27 AM](https://github.com/RyanSKang/SQL-Employee-Tracker/assets/124969918/4a0aeab4-e5d6-4f94-a72d-cddce58d33f2)
 
 ## Walkthrough Video
-<a href="chrome-extension://mmeijimgabbpbgpdklnllpncmdofkcpn/app.html#/files/e740d588-2eac-46fd-y754-c11561a1da52" target="_blank">Walkthrough Video Link</a>
+<a href="https://watch.screencastify.com/v/nmeBYtdsfRYg6sj0E6kd">Video Link</a>
 
 ## Credits
 -1 on 1 Tutor: Julio Valdez  
